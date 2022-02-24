@@ -3,16 +3,27 @@ package H01_KundeArtikelBestellung;
 import java.sql.*;
 
 public class Artikel {
-	public static void createTableArtikel(Connection c) {
-        Statement stmt;
+	
+	public static void dropTableArtikel(Connection c ) {
+		Statement stmt;
         try {
             stmt = c.createStatement();
             String sql = "DROP TABLE IF EXISTS Artikel;";
             stmt.executeUpdate(sql);
-            sql = "CREATE TABLE IF NOT EXISTS Artikel" +
-                    "(id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+	}
+	
+	public static void createTableArtikel(Connection c) {
+        Statement stmt;
+        try {
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Artikel(" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT," +
                     "bezeichnung VARCHAR(30)," +
-                    "preis double);";
+                    "preis DOUBLE);";
             stmt.executeUpdate(sql);
             stmt.close();
         } catch (SQLException e) {
@@ -24,11 +35,11 @@ public class Artikel {
         Statement stmt;
         try {
             stmt = c.createStatement();
-            String sql = "insert into Artikel (bezeichnung, preis)" +
-                    "values (\"" + bezeichnung + "\", " + preis +");";
-			System.out.println("Artikel eingefügt");
-			
+//          String sql = String.format("INSERT INTO Artikel (bezeichnung, preis) VALUES(\"%s\", %f);", bezeichnung, preis);
+            String sql = String.format("INSERT INTO Artikel (bezeichnung, preis) VALUES(\"%s\", " + preis + ");", bezeichnung);
             stmt.executeUpdate(sql);
+            
+            System.out.println("Artikel eingefügt");
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -41,7 +52,7 @@ public class Artikel {
         Statement stmt;
         try {
             stmt = c.createStatement();
-            String sql = "ALTER TABLE Artikel ADD COLUMN " + bezeichnung + " " + datentyp + ";";            
+            String sql = String.format("ALTER TABLE Artikel ADD COLUMN %s %s;", bezeichnung, datentyp);            
             stmt.executeUpdate(sql);
             
             System.out.println("Artikel-Tabelle wurde um Lagerbestand erweitert");
@@ -55,7 +66,7 @@ public class Artikel {
         Statement stmt;
         try {
             stmt = c.createStatement();
-            String sql = "UPDATE Artikel SET lagerbestand =" + lagerbestand + " WHERE id =" + artikelid + ";";
+            String sql = String.format("UPDATE Artikel SET lagerbestand = %d WHERE id = %d;", lagerbestand, artikelid);
             stmt.executeUpdate(sql);
             stmt.close();
         } catch (SQLException e) {
@@ -69,7 +80,7 @@ public class Artikel {
   		int lagerbestand = 0;
   		try {
   			Statement stmt = c.createStatement();
-  			String sql = "SELECT lagerbestand FROM Artikel WHERE id = " + artikelid + ";";
+  			String sql = String.format("SELECT lagerbestand FROM Artikel WHERE id = %d;", artikelid);
   			ResultSet rs = stmt.executeQuery(sql);
   			
   			while ( rs.next() ) {
@@ -92,8 +103,8 @@ public class Artikel {
   		Statement stmt;
         try {
             stmt = c.createStatement();
-            String sql = "SELECT lagerbestand from Artikel WHERE id = " + artikelid + ";";
-            stmt.executeUpdate(sql);
+            String sql = String.format("SELECT lagerbestand from Artikel WHERE id = %d;", artikelid);
+            //stmt.executeUpdate(sql);
             ResultSet rs = stmt.executeQuery(sql);
             
 			while ( rs.next() ) {

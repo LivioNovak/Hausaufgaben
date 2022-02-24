@@ -7,31 +7,43 @@ public class Runner {
 	
 
 	
-	public static Connection getConnection() throws ClassNotFoundException, SQLException  {
-		Class.forName("org.sqlite.JDBC");
-		return DriverManager.getConnection("jdbc:sqlite:C:\\Users\\linov\\eclipse-workspace\\Infi_3AHWII\\Datenbanken\\ArtKunBest.db");
+	public static Connection getConnection(String url, String user, String password) throws ClassNotFoundException, SQLException  {
+		//Class.forName("com.mysql.jdbc.Driver");
+		return DriverManager.getConnection(url, user, password);
 	}
 	
 	
 	public static void main(String[] args) {
+		String url = "jdbc:mysql://localhost:3306/infi01_artkunbest";
+		String user = "root";
+		String password = "";
+		
 		try {
-			Connection c = getConnection();
+			Connection c = getConnection(url, user, password);
+			System.out.println("Connection erfolgreich\n");
 			c.setAutoCommit(true);
 			
-			System.out.println("TABELLEN-ERSTELLEN");
-			Kunde.createTableKunde(c);
-			Artikel.createTableArtikel(c);
-			Bestellung.createTableBestellung(c);
+			System.out.println("TABELLEN-LÖSCHEN");
+			Bestellung.dropTableBestellung(c);
+			Artikel.dropTableArtikel(c);
+			Kunde.dropTableKunde(c);
+			System.out.println("Erfolgreich");
 			
-			System.out.println("\nKUNDE");
-			Kunde.insertIntoKunde(c, "Simon Vierlovic", "simon.vierlo@gmx.com");
-			Kunde.insertIntoKunde(c, "Mattias Hohenzoller", "mazoller@tsn.at");
-			Kunde.insertIntoKunde(c, "KarlWerner", "Werner.Karl@KalWerner.ind");
+			System.out.println("\nTABELLEN-ERSTELLEN");
+			Artikel.createTableArtikel(c);
+			Kunde.createTableKunde(c);
+			Bestellung.createTableBestellung(c);
+			System.out.println("Erfolgreich");
 			
 			System.out.println("\nARTIKEL");
 			Artikel.insertIntoArtikel(c, "Valo_Skins", 27.60);
 			Artikel.insertIntoArtikel(c, "Vbugs", 100.00);
 			Artikel.insertIntoArtikel(c, "WD40", 6.99);
+			
+			System.out.println("\nKUNDE");
+			Kunde.insertIntoKunde(c, "Simon Vierlovic", "simon.vierlo@gmx.com");
+			Kunde.insertIntoKunde(c, "Mattias Hohenzoller", "mazoller@tsn.at");
+			Kunde.insertIntoKunde(c, "KarlWerner", "Werner.Karl@KalWerner.ind");
 			
 			System.out.println("\nBESTELLUNG");
 			Bestellung.insertIntoBestellung(c, 1, 2, "2021-07-16", 3);

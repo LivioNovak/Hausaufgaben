@@ -4,18 +4,29 @@ import java.sql.*;
 
 
 public class Bestellung {
-	public static void createTableBestellung(Connection c) {
-        Statement stmt;
+	
+	public static void dropTableBestellung(Connection c) {
+		Statement stmt;
         try {
             stmt = c.createStatement();
             String sql = "DROP TABLE IF EXISTS Bestellung;";
             stmt.executeUpdate(sql);
-            sql = "CREATE TABLE IF NOT EXISTS Bestellung" +
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+	}
+       
+	public static void createTableBestellung(Connection c) {
+        Statement stmt;
+        try {
+            stmt = c.createStatement();
+            String sql = "CREATE TABLE IF NOT EXISTS Bestellung" +
                     "(artikelid INTEGER NOT NULL," +
                     "kundenid INTEGER NOT NULL," +
                     "bestelldatum DATE NOT NULL," +
                     "anzahl INTEGER," +
-                    "PRIMARY KEY(kundenid, artikelid, bestelldatum)" +
+                    "PRIMARY KEY(kundenid, artikelid, bestelldatum)," +
                     "FOREIGN KEY(kundenid) REFERENCES Kunde(id)," +
                     "FOREIGN KEY(artikelid) REFERENCES Artikel(id));";
             stmt.executeUpdate(sql);
@@ -29,8 +40,7 @@ public class Bestellung {
         Statement stmt;
         try { 
             stmt = c.createStatement();
-            String sql = "insert into Bestellung (artikelid, kundenid, bestelldatum, anzahl) values" +
-                    "(" + artikelid + ", "  + kundenid + ", \"" + bestelldatum + "\", " + anzahl + ");";
+            String sql = String.format("INSERT INTO Bestellung (artikelid, kundenid, bestelldatum, anzahl) VALUES(%d, %d, \"%s\", %d);", artikelid, kundenid, bestelldatum, anzahl);
             System.out.println("Bestellungen eingefügt");
             
             stmt.executeUpdate(sql);
@@ -41,14 +51,14 @@ public class Bestellung {
     }
 	
 	
-	public static void selectBestellung(Connection c, int kunde) {
+	public static void selectBestellung(Connection c, int kundenid) {
 		try {
 			Statement stmt = c.createStatement();
-			String sql = "SELECT k.name, a.bezeichnung, b.anzahl, " +
-					"(SELECT a.preis * b.anzahl FROM Artikel a INNER JOIN Bestellung b ON a.id = b.artikelID WHERE b.kundenid == " + kunde + ")AS gesamtPreis " + 
-					"FROM Kunde k INNER JOIN Bestellung b ON k.id == b.kundenid " +
-					"INNER JOIN Artikel a ON a.id == b.artikelid " +
-					"WHERE b.kundenid == " + kunde + ";";
+			String sql = String.format("SELECT k.name, a.bezeichnung, b.anzahl, " +
+					"(SELECT a.preis * b.anzahl FROM Artikel a INNER JOIN Bestellung b ON a.id = b.artikelID WHERE b.kundenid = %d)AS gesamtPreis " + 
+					"FROM Kunde k INNER JOIN Bestellung b ON k.id = b.kundenid " +
+					"INNER JOIN Artikel a ON a.id = b.artikelid " +
+					"WHERE b.kundenid = %d;", kundenid, kundenid);
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			while ( rs.next() ) {
@@ -57,11 +67,10 @@ public class Bestellung {
 		         int anzahl = rs.getInt("anzahl");
 		         double gesamtPreis = rs.getDouble("gesamtPreis");
 		         
-		         System.out.println("NAME = " + name );
-		         System.out.println("BEZEICHNUNG = " + bezeichnung );
-		         System.out.println("ANZAHL = " + anzahl );
-		         System.out.printf("GESAMTPREIS = %.2f€", gesamtPreis);
-		         System.out.println();
+		         System.out.printf("KUNDE = %s\n", name );
+		         System.out.printf("ARTIKEL = %s\n", bezeichnung);
+		         System.out.printf("ANZAHL = %d\n", anzahl );
+		         System.out.printf("GESAMTPREIS = %.2f€\n", gesamtPreis);
 		      }
 			System.out.println("Bestellung ausgegeben");
 			
@@ -79,9 +88,10 @@ public class Bestellung {
         Statement stmt;
         try {
             stmt = c.createStatement();
-            String sql = "DELETE FROM Bestellung WHERE artikelid =" + artikelid + " AND kundenid =" + kundenid + " AND bestelldatum = " + bestelldatum + ";";
+            String sql = String.format("DELETE FROM Bestellung WHERE artikelid = %d AND kundenid = %d AND bestelldatum = \"%s\";", artikelid, kundenid, bestelldatum);
             stmt.executeUpdate(sql);
-            System.out.println("Kunde " + kundenid + " hat die Bestellung von Artikel "+ artikelid + " gelöscht");
+            
+            System.out.println(String.format("Kunde %d hat die Bestellung von Artikel %d gelöscht", kundenid, artikelid));
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,10 +104,10 @@ public class Bestellung {
         Statement stmt;
         try {
             stmt = c.createStatement();
-            String sql = "UPDATE Bestellung SET anzahl = " + anzahl +  " WHERE artikelid =" + artikelid + " AND kundenid =" + kundenid + " AND bestelldatum = " + bestelldatum + ";";
+            String sql = String.format("UPDATE Bestellung SET anzahl = %d WHERE artikelid = %d AND kundenid = %d AND bestelldatum = \"%s\";", anzahl, artikelid, kundenid, bestelldatum);
             stmt.executeUpdate(sql);
             
-            System.out.println("Kunde " + kundenid + " hat die Bestellmenge des Artikels " + artikelid + " auf " + anzahl + " Stück geändert");
+            System.out.println(String.format("Kunde %d hat die Bestellmenge des Artikels %d auf %d Stück geändert", kundenid, artikelid, anzahl));
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
