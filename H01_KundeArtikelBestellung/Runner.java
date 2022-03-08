@@ -7,16 +7,22 @@ public class Runner {
 	
 
 	
-	public static Connection getConnection(String url, String user, String password) throws ClassNotFoundException, SQLException  {
+	public static Connection getConnection(String url, String user, String password)  {
 		//Class.forName("com.mysql.jdbc.Driver");
-		return DriverManager.getConnection(url, user, password);
+		try {
+			return DriverManager.getConnection(url, user, password);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
+		
 	
 	
 	public static void main(String[] args) {
 		String url = "jdbc:mysql://localhost:3306/infi01_artkunbest";
-		String user = "root";
-		String password = "";
+		String user = "Livio";
+		String password = "Livio";
 		
 		try {
 			Connection c = getConnection(url, user, password);
@@ -81,8 +87,6 @@ public class Runner {
 			c.close();
 		} catch (SQLException e2) {
 			e2.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
 	}
 }

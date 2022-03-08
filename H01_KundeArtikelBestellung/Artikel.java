@@ -46,7 +46,7 @@ public class Artikel {
         }
     }
     
-    
+
 //ERWEITERUNGS-AUFGABE c)
     public static void AlterArtikel(Connection c, String bezeichnung, String datentyp) {
         Statement stmt;
