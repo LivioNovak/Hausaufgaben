@@ -7,9 +7,8 @@ import java.sql.Statement;
 public class Klasse {
 
 	public static void dropTableKlasse(Connection c ) {
-		Statement stmt;
-        try {
-            stmt = c.createStatement();
+		try {
+        	Statement stmt = c.createStatement();
             String sql = "DROP TABLE IF EXISTS Klasse;";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -20,9 +19,8 @@ public class Klasse {
 	
 //AUFGABE a)
 	public static void createTableKlasse(Connection c) {
-        Statement stmt;
-        try {
-            stmt = c.createStatement();
+		try {
+        	Statement stmt = c.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS Klasse(" +
                     "id INT PRIMARY KEY AUTO_INCREMENT," +
                     "name CHAR(5)," +
@@ -35,9 +33,8 @@ public class Klasse {
     }
 	
 	public static void insertIntoKlasse(Connection c, String name, String klassenvorstand) {
-        Statement stmt;
-        try {
-            stmt = c.createStatement();
+		try {
+        	Statement stmt = c.createStatement();
             String sql = String.format("INSERT INTO Klasse (name, klassenvorstand) VALUES(\"%s\", \"%s\");", name, klassenvorstand);
             stmt.executeUpdate(sql);
             

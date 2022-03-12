@@ -8,9 +8,8 @@ import java.time.LocalDate;
 
 public class Schueler {
 	public static void dropTableSchueler(Connection c ) {
-		Statement stmt;
-        try {
-            stmt = c.createStatement();
+		try {
+        	Statement stmt = c.createStatement();
             String sql = "DROP TABLE IF EXISTS Schueler;";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -21,9 +20,8 @@ public class Schueler {
 	
 //AUFGABE a)	
 	public static void createTableSchueler(Connection c) {
-        Statement stmt;
-        try {
-            stmt = c.createStatement();
+		try {
+        	Statement stmt = c.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS Schueler(" +
                     "id INT PRIMARY KEY AUTO_INCREMENT," +
                     "name VARCHAR(30)," +
@@ -36,11 +34,10 @@ public class Schueler {
     }
 	
 	public static void insertIntoSchueler(Connection c, String name, LocalDate ld) {
-        Statement stmt;
-        java.sql.Date sqlLd = java.sql.Date.valueOf(ld);
-        
         try {
-            stmt = c.createStatement();
+        	Statement stmt = c.createStatement();
+        	java.sql.Date sqlLd = java.sql.Date.valueOf(ld);
+        	
             String sql = String.format("INSERT INTO Schueler (name, geburtsdatum) VALUES(\"%s\", \"%s\");", name, sqlLd);
             stmt.executeUpdate(sql);
             

@@ -9,9 +9,8 @@ import java.time.LocalDate;
 
 public class SchuelerZuKlasse {
 	public static void dropTableSchuelerZuKlasse(Connection c ) {
-		Statement stmt;
         try {
-            stmt = c.createStatement();
+        	Statement stmt = c.createStatement();
             String sql = "DROP TABLE IF EXISTS SchuelerZuKlasse;";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -23,9 +22,8 @@ public class SchuelerZuKlasse {
 	
 //AUFGABE b)
 	public static void createTableSchuelerZuKlasse(Connection c) {
-        Statement stmt;
-        try {
-            stmt = c.createStatement();
+		try {
+        	Statement stmt = c.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS SchuelerZuKlasse" +
                     "(schuelerid INTEGER NOT NULL," +
                     "klassenid INTEGER NOT NULL," +
@@ -41,15 +39,14 @@ public class SchuelerZuKlasse {
     }
 	
 	
-	public static void insertIntoSchulerZuKlasse(Connection c, String schuelername, String klassenname, LocalDate ld) {
-		Statement stmt;
-		int schuelerid = 0;
-		int klassenid = 0;
-		java.sql.Date sqlLd = java.sql.Date.valueOf(ld);
-		
+	public static void insertIntoSchulerZuKlasse(Connection c, String schuelername, String klassenname) {
 		try {
-			stmt = c.createStatement();
-			String sql = String.format("SELECT id FROM schueler where name = \"%s\"", schuelername);
+        	Statement stmt = c.createStatement();
+        	int schuelerid = 0;
+    		int klassenid = 0;
+    		java.sql.Date sqlLd = java.sql.Date.valueOf(LocalDate.now());
+    		
+        	String sql = String.format("SELECT id FROM schueler where name = \"%s\"", schuelername);
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				schuelerid = rs.getInt("id");
@@ -61,7 +58,7 @@ public class SchuelerZuKlasse {
 				klassenid = rs.getInt("id");
 			}
 			
-			sql = String.format("INSERT INTO SchuelerZuKlasse VALUES(%d, %d, \"%s\");", schuelerid, klassenid, sqlLd);
+			sql = String.format("INSERT INTO SchuelerZuKlasse VALUES(%d, %d, \"" +  sqlLd + "\");", schuelerid, klassenid);
 			stmt.executeUpdate(sql);
 			
 			System.out.println(String.format("Schueler %d der Klasse %d zugeteilt.", schuelerid, klassenid));

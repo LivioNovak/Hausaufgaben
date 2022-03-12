@@ -42,7 +42,7 @@ public class Runner {
 			System.out.println("Erfolgreich");
 			
 			System.out.println("\nSCHUELER");
-			Schueler.insertIntoSchueler(c, "Johann Sebastian", LocalDate.of(2004, 11, 30));
+			Schueler.insertIntoSchueler(c, "Johann Sebastian", LocalDate.of(2004, 11, 29));
 			Schueler.insertIntoSchueler(c, "Julian Altmann", LocalDate.of(2005, 7, 2));
 			Schueler.insertIntoSchueler(c, "Jasmin Muster", LocalDate.of(2003, 3, 14));
 			
@@ -51,9 +51,9 @@ public class Runner {
 			Klasse.insertIntoKlasse(c, "3AHWI", "Sasha Jambor");
 			
 			System.out.println("\nSCHUELER ZU KLASSE");
-			SchuelerZuKlasse.insertIntoSchulerZuKlasse(c, "Johann Sebastian", "1BHET", LocalDate.of(2018, 9, 14));
-			SchuelerZuKlasse.insertIntoSchulerZuKlasse(c, "Julian Altmann", "1BHET", LocalDate.of(2018, 9, 14));
-			SchuelerZuKlasse.insertIntoSchulerZuKlasse(c, "Jasmin Muster", "3AHWI", LocalDate.of(2016, 9, 8));
+			SchuelerZuKlasse.insertIntoSchulerZuKlasse(c, "Johann Sebastian", "1BHET");
+			SchuelerZuKlasse.insertIntoSchulerZuKlasse(c, "Julian Altmann", "1BHET");
+			SchuelerZuKlasse.insertIntoSchulerZuKlasse(c, "Jasmin Muster", "3AHWI");
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
