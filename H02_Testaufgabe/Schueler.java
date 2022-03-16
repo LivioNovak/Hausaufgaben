@@ -1,6 +1,7 @@
 package H02_Testaufgabe;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -33,18 +34,20 @@ public class Schueler {
         }
     }
 	
-	public static void insertIntoSchueler(Connection c, String name, LocalDate ld) {
-        try {
-        	Statement stmt = c.createStatement();
-        	java.sql.Date sqlLd = java.sql.Date.valueOf(ld);
-        	
-            String sql = String.format("INSERT INTO Schueler (name, geburtsdatum) VALUES(\"%s\", \"%s\");", name, sqlLd);
-            stmt.executeUpdate(sql);
-            
-            System.out.println("Schueler eingefügt");
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	public static void insertIntoSchueler(Connection c, String name, LocalDate geburtsdatum) {
+		try {
+			String sql = "INSERT INTO Schueler (name, geburtsdatum) VALUES (?, ?)";
+			PreparedStatement preStmt = c.prepareStatement(sql);
+			java.sql.Date sqlGeburtsdatum = java.sql.Date.valueOf(geburtsdatum);
+			
+			preStmt.setString(1, name);
+	        preStmt.setDate(2, sqlGeburtsdatum);
+	        preStmt.executeUpdate();
+	        
+	        System.out.println("Schueler eingefuegt");
+	        preStmt.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

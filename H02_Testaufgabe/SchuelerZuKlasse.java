@@ -1,6 +1,7 @@
 package H02_Testaufgabe;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -41,29 +42,40 @@ public class SchuelerZuKlasse {
 	
 	public static void insertIntoSchulerZuKlasse(Connection c, String schuelername, String klassenname) {
 		try {
-        	Statement stmt = c.createStatement();
-        	int schuelerid = 0;
-    		int klassenid = 0;
-    		java.sql.Date sqlLd = java.sql.Date.valueOf(LocalDate.now());
-    		
-        	String sql = String.format("SELECT id FROM schueler where name = \"%s\"", schuelername);
-			ResultSet rs = stmt.executeQuery(sql);
+			int schuelerid = 0;
+			int klassenid = 0;
+			java.sql.Date sqlZuteilungsdatum = java.sql.Date.valueOf(LocalDate.now());
+			
+			String sql = "SELECT id FROM schueler where name = ?";
+			PreparedStatement preStmt = c.prepareStatement(sql);
+			preStmt.setString(1, schuelername);
+			
+			ResultSet rs = preStmt.executeQuery();
 			while(rs.next()) {
 				schuelerid = rs.getInt("id");
 			}
 			
-			sql = String.format("SELECT id FROM klasse where name = \"%s\"", klassenname);
-			rs = stmt.executeQuery(sql);
+			
+			sql = "SELECT id FROM klasse where name = ?";
+			preStmt = c.prepareStatement(sql);
+			preStmt.setString(1, klassenname);
+			
+			rs = preStmt.executeQuery();
 			while(rs.next()) {
 				klassenid = rs.getInt("id");
 			}
 			
-			sql = String.format("INSERT INTO SchuelerZuKlasse VALUES(%d, %d, \"" +  sqlLd + "\");", schuelerid, klassenid);
-			stmt.executeUpdate(sql);
-			
-			System.out.println(String.format("Schueler %d der Klasse %d zugeteilt.", schuelerid, klassenid));
-			rs.close();
-			stmt.close();
+	        
+	        sql = "INSERT INTO SchuelerZuKlasse VALUES (?, ?, ?)";
+	        preStmt = c.prepareStatement(sql);
+	        preStmt.setInt(1, schuelerid);
+	        preStmt.setInt(2, klassenid);
+	        preStmt.setDate(3, sqlZuteilungsdatum);
+	        preStmt.executeUpdate();
+	        
+	        
+	        System.out.printf("Schueler %d in Klasse %d eingefuegt\n", schuelerid, klassenid);
+	        preStmt.close();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
