@@ -1,0 +1,13 @@
+Schueler;;;;;;
+id#;Vorname;Nachname;Geburtsdatum;;;
+1;Johann;Sebsatian;29.11.2004;;;
+2;Julian;Altmann;02.07.2005;;;
+3;Jasmin;Muster;14.03.2003;;;
+;;;;;;
+Klasse;;;;;;
+id#;Name;Klassenvorstand;;;;
+1;1BHET;Hans Herbertson;;;;
+2;3AHWII;Sasha Jambor;;;;
+;;;;;;
+;;;;;;
+;;;;;;
