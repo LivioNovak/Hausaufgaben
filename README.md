@@ -75,7 +75,7 @@ Anschließend wurde die Aufgabe erweitert:
 <br><br>
 
 ## *H04_CsvEinlesen*
-Ist die aktuelle Hausaufgabe
+hierbei ging es darum, Daten aus einer CSV-Datei einzulesen und in einer Datenbank zu speichern
 > ### **Aufgabe:**
 >
 > * [X] Erzeuge eine CSV-Datei von Schülerinformationen
@@ -88,14 +88,16 @@ Ist die aktuelle Hausaufgabe
 >
 >Fertigstellung 2022.04.04
 
-<br>
+Die Aufgabe wird noch verbessert
 
-Außerdem habe ich eine zusätzliche Funktion eingebaut. Und zwar ist es möglich, in einer CSV-Datei mehrere Tabellen anzulegen. Dafür gibt es jedoch Voraussetzungen: 
+<br><br>
 
-- Primary keys werdem mit  "#" angegeben
-- Foreign keys werden mit "\*" angegeben. Hinter dem "\*" steht dann die refernzierte Tabelle
-- zwischen den Tabellen muss 1 leere Zeile sein
+## *H05_CsvExportieren*
+Quasi das Gegenteil von H04. Daten sollen aus der Datenbank selektiert werden und in einer CSV-Datei gespeichert werden
+>### **Aufgabe:**
+>
+> * [X] erzeuge beispielhaft einige Schüler+Klasse zuordnungen (Datum der Zuordnung soll auch gespeichert werden)
+> * [X] Selektiere diese Zuordnungen und speichere die Selektion in eine CSV-Datei ab
+>
+>Fertigstellung 2022.04.18
 
-<br>
-
-die benutzte CSV-Datei ist im Ordner.
