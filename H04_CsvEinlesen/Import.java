@@ -3,6 +3,8 @@ package H04_CsvEinlesen;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,9 +18,9 @@ import java.util.Properties;
 import java.util.Scanner;
 
 
-public class Runner {				
+public class Import {				
 
-	static ArrayList<String[]> columns = new ArrayList<>();	//String[0] = name; String[1] = dataType; (falls vorhanden) String[2] = varcharGröße
+	static ArrayList<String[]> columns = new ArrayList<>();	//String[0] = name; String[1] = Datentyp; (falls vorhanden) String[2] = varcharGröße
 
 
 	public static Connection getConnection(String url, String user, String password)  {
@@ -42,14 +44,14 @@ public class Runner {
 			
 			sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'infi04_Schuelerverwaltung';";
 			ResultSet rs = stmt.executeQuery(sql);
-			sql = "";
+			
 			String temp = "";
 			while(rs.next()) {
 				temp += String.format("DROP TABLE IF EXISTS %s;", rs.getString("table_name"));
 			}
-			String[] moreSqls = temp.split(";");
-			for (int i = 0; i < moreSqls.length; i++) {
-				if(!moreSqls[i].equals("")) stmt.executeUpdate(moreSqls[i]);
+			String[] dropSqls = temp.split(";");
+			for (int i = 0; i < dropSqls.length; i++) {
+				if(!dropSqls[i].equals("")) stmt.executeUpdate(dropSqls[i]);
 			}
 			
 			sql = "SET FOREIGN_KEY_CHECKS = 1;";
@@ -84,7 +86,7 @@ public class Runner {
 			if(contents[i].contains("#")) {
 				numOfPrimKey++;
 				if(numOfPrimKey > 1) primKeys += ", ";
-				primKeys += onlyName(contents[i], 0);
+				primKeys += contents[i].split("#")[0];
 			}
 		}
 		return primKeys + ")";
@@ -113,7 +115,7 @@ public class Runner {
 				if (contents[i].contains("id")) column = new String[] {"", "INT"};
 				else if (contents[i].contains("preis")) column = new String[] {"", "DOUBLE"};
 				else if (contents[i].contains("datum")) column = new String[] {"", "DATE"};
-				else column = new String[] {"", "VARCHAR(" + contents[i].length() + ")", contents[i].length() + ""};		//nicht so optimal
+				else column = new String[] {"", "VARCHAR(" + contents[i].length() + ")", contents[i].length() + ""};
 				
 				column[0] = onlyName(contents[i], 0);
 				columns.add(column);
@@ -136,7 +138,7 @@ public class Runner {
 	}
 
 
-
+	
 	
 	public static void insertInto(Connection conn, String tableName, String[] contents) {
 		try {
@@ -159,7 +161,7 @@ public class Runner {
 				}
 				else { //VARCHAR
 					if(contents[i].length() > Integer.parseInt(columns.get(i)[2])) {	//alter Table wenn contents > laenge des VARCHAR()
-						columns.get(i)[2] = contents[i].length() + "";
+						columns.get(i)[2] = String.format("%d", contents[i].length());
 
 						Statement stmt = conn.createStatement();
 						String alterSql = String.format("ALTER TABLE %s MODIFY %s VARCHAR(%d);", tableName, columns.get(i)[0], contents[i].length());
@@ -198,7 +200,7 @@ public class Runner {
 					default: row += String.format("%s, ", rs.getString(columns.get(i)[0])); break;
 					}
 				}
-				System.out.println(row);		//eventuell in select-methode einbauen
+				System.out.println(row);
 			}
 			System.out.println();
 			rs.close();
@@ -217,21 +219,17 @@ public class Runner {
 			String configFilePath = "Hausaufgaben/H04_CsvEinlesen/config.properties";
             FileInputStream propsInput = new FileInputStream(configFilePath);
             Properties prop = new Properties();
-            prop.load(propsInput);
-            
-            
+            prop.load(propsInput); 
             
             
 			String url = prop.getProperty("url");
 			String user = prop.getProperty("user");
 			String password = prop.getProperty("password");
 
-			boolean alreadySelectet = false;
-			int newTable = 0;
+			
 			String tableName = "";
 		
 			
-
 			Connection conn = getConnection(url, user, password);
 			System.out.println("Connection erfolgreich\n");
 			conn.setAutoCommit(true);
@@ -239,46 +237,28 @@ public class Runner {
 			dropTables(conn);
 
 			Scanner scanner = new Scanner (new File(prop.getProperty("csvFilePath")));
+			int newTable = 0;
 			while(scanner.hasNextLine()) {
-//				String row = scanner.nextLine();
 				String[] contents = scanner.nextLine().split(";");
 
-				if(contents.length < 1 ) {			//ist die Zeile leer, ist die Tabelle vorbei
-					newTable = 0;
-					if(alreadySelectet == false) { //tabelle soll nur 1mal ausgegeben werden
-						select(conn, tableName);
-						alreadySelectet = true;
-					}
-					while(columns.size() > 0) {
-						columns.remove(0);
-					}
+				//"unsichtbare Tippfehler" entfernen
+				for (int i = 0; i < contents.length; i++) {
+					contents[i].trim();
 				}
-				else {
-					//"unsichtbare Tippfehler" entfernen
-					for (int i = 0; i < contents.length; i++) {
-						contents[i].trim();
-					}
-					
-					if (newTable == 0) {				//0 -> name der Tabelle 
-						tableName = contents[0];
-						alreadySelectet = false; //für spätere ausgabe/select zurücksetzen
-						newTable++;
-					}
-					else if(newTable == 1) {			//1 -> spaltennamen
-						createTable(conn, tableName, contents);
-						newTable++;
-					}
-					else {								//sonst contents inserten Tabelle
-						insertInto(conn, tableName, contents);
-					}
+
+				if(newTable == 1) {			//1 -> spaltennamen
+					createTable(conn, tableName, contents);
+					newTable++;
 				}
+				else insertInto(conn, tableName, contents);		//sonst contents inserten in Tabelle
 			}
-			if(alreadySelectet == false) { //letzte tabelle, falls danach die CSV-Datei endet
-				select(conn, tableName);
-				alreadySelectet = true;
-			}
+			select(conn, tableName);
 			scanner.close();
-		} catch (Exception e) {
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	} 

@@ -3,6 +3,7 @@ package H05_CsvExportieren;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -26,7 +27,9 @@ public class Export {
 		String result = "";
 		
 		for (int i = 0; i < header.length; i++) {
-			result += String.format("%s[%s];", header[i][0], header[i][1]);
+			result += String.format("%s[%s]", header[i][0], header[i][1]);
+			
+			if(i < header.length -1) result += ";";
 		}
 		result += "\r\n";
 		
@@ -50,11 +53,16 @@ public class Export {
 			sql = String.format("SELECT DATA_TYPE FROM INFORMATION_SCHEMA. COLUMNS WHERE TABLE_SCHEMA='%s' AND TABLE_NAME='%s';", database_name, table_name);
 			rs = stmt.executeQuery(sql);
 			temp = "";
-			while(rs.next()) {
+			while(rs.next()) {	//index für columnName, falls text als Dateityp
 				temp += String.format("%s;", rs.getString("DATA_TYPE"));
 			}
 			String[] datatypes = temp.split(";");
 			
+			//varchar & char brauchen eine angegebene länge, jedoch sollte man resultset abwarten lassen, bevor es neu genutzt wird
+			for (int i = 0; i < datatypes.length; i++) {
+				if(datatypes[i].equals("varchar")) datatypes[i] = String.format("varchar(%d)", getLength(conn, names[i], table_name));
+				else if(datatypes[i].equals("char")) datatypes[i] = String.format("char(%d)", getLength(conn, names[i], table_name));
+			}
 			
 			String[][] columns = new String[names.length][2];
 			for (int i = 0; i < names.length; i++) {
@@ -65,11 +73,30 @@ public class Export {
 			stmt.close();
 			
 			return columns; 
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		return null;
+	}
+	
+	
+	public static int getLength(Connection conn, String column_name, String table_name) {
+		try {
+			String sql = String.format("SELECT length(%s) FROM %s ORDER BY length(%s) DESC LIMIT 1;", column_name, table_name, column_name);
+			Statement stmt = conn.createStatement();
+			ResultSet rs  = stmt.executeQuery(sql);
+			int length = 0;
+			while(rs.next()) {
+				length = rs.getInt(String.format("length(%s)", column_name));
+			}
+			rs.close();
+			stmt.close();
+			return length;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 	
@@ -83,11 +110,13 @@ public class Export {
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				for (int i = 0; i < columns.length; i++) {
-					if(columns[i][1].equals("int")) data += String.format("%d;",rs.getInt(columns[i][0]));
-					else if(columns[i][1].equals("double")) data += String.format("%f;", rs.getDouble(columns[i][0]));
-					else if(columns[i][1].equals("date")) data += rs.getDate(columns[i][0]) + ";";
-					else if(columns[i][1].equals("varchar") || columns[i][1].equals("char")) data += String.format("%s, ", rs.getString(columns[i][0]));
-					else if(columns[i][1].equals("boolean")) data += String.format("%s, ", rs.getBoolean(columns[i][0]));
+					if(columns[i][1].equals("int")) data += String.format("%d",rs.getInt(columns[i][0]));
+					else if(columns[i][1].equals("double")) data += String.format("%f", rs.getDouble(columns[i][0]));
+					else if(columns[i][1].equals("date")) data += rs.getDate(columns[i][0]);
+					else if(columns[i][1].contains("varchar") || columns[i][1].contains("char")) data += String.format("%s", rs.getString(columns[i][0]));
+					else if(columns[i][1].equals("boolean")) data += String.format("%s", rs.getBoolean(columns[i][0]));
+					
+					if(i < columns.length -1) data += ";";
 				}
 				data+= "\r\n";			//so nur für windows; %n anscheinend plattformunabhängig, funktioniert aber nicht; \n besser?
 			}
@@ -132,7 +161,9 @@ public class Export {
 			}		
 			fw.flush();
 			fw.close();
-		} catch (Exception e) {
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
