@@ -22,8 +22,8 @@ public class KundeLeihtAuto {
         try {
             Statement stmt = c.createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS KundeleihtAuto(" +
-                    "kundenid INT NOT NULL," +
-                    "kennzeichen VARCHAR(8) NOT NULL," +
+                    "kundenid INT," +
+                    "kennzeichen VARCHAR(8)," +
                     "beginn DATE," +
                     "ende DATE," +
                     "PRIMARY KEY(kundenid, kennzeichen, beginn)," +
