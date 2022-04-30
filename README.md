@@ -88,7 +88,7 @@ hierbei ging es darum, Daten aus einer CSV-Datei einzulesen und in einer Datenba
 >
 >Fertigstellung 2022.04.04
 
-Die Aufgabe wird noch verbessert
+Die Aufgabe wurde nun angepasst, dass jede Tabelle eine eigene CSV-Datei besitzt & benötigt
 
 <br><br>
 
@@ -100,4 +100,16 @@ Quasi das Gegenteil von H04. Daten sollen aus der Datenbank selektiert werden un
 > * [X] Selektiere diese Zuordnungen und speichere die Selektion in eine CSV-Datei ab
 >
 >Fertigstellung 2022.04.18
+
+
+<br><br>
+
+## *H06_ImportExportJSON*
+H04 sowie H05 sollten auf JSON umgeschrieben werden
+>### **Aufgabe:**
+>
+> * [X] Import mit JSON-Datei funktioniert
+> * [X] Export mit JSON-Datei funktioniert
+
+**Wichtig:** bei Import wird die Ordnung verändert. was genau gemeint ist, sieht man in der Ausgabe
 
