@@ -1,0 +1,17 @@
+<alleSchueler>
+    <schueler>
+        <Vorname>Julia</Vorname>
+        <Nachname>Altmann</Nachname>
+        <Geburtsdatum>22.07.2005</Geburtsdatum>
+    </schueler>
+    <schueler>
+        <Vorname>Johann</Vorname>
+        <Nachname>KarlWerner</Nachname>
+        <Geburtsdatum>29.11.2004</Geburtsdatum>
+    </schueler>
+    <schueler>
+        <Vorname>Domas</Vorname>
+        <Nachname>Schnaub</Nachname>
+        <Geburtsdatum>14.03.2003</Geburtsdatum>
+    </schueler>
+</alleSchueler>

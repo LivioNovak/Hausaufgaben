@@ -113,3 +113,15 @@ H04 sowie H05 sollten auf JSON umgeschrieben werden
 
 **Wichtig:** bei Import wird die Ordnung verändert. was genau gemeint ist, sieht man in der Ausgabe
 
+
+<br><br>
+
+## *H07_ImportExportXML*
+H04 sowie H05 sollten auf XML umgeschrieben werden
+>### **Aufgabe:**
+>
+> * [X] Import mit XML-Datei funktioniert
+> * [X] Export mit XML-Datei funktioniert
+
+**Anmerkung:** bei Import gab es (beim create-Table) ein paar probleme. Sie werden als kommentar genauer beschrieben
+
